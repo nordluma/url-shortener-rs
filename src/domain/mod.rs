@@ -13,12 +13,12 @@ pub struct Url {
 
 impl From<NewUrl> for Url {
     fn from(value: NewUrl) -> Self {
-        let now = "NOW".to_string(),
+        let now = "NOW".to_string();
 
         Self {
             url: value.url,
             created_at: now,
-            last_modified: now,
+            last_modified: now.clone(),
             request_count: 0,
         }
     }
