@@ -1,0 +1,3 @@
+struct NewUrl {
+    url: String,
+}
