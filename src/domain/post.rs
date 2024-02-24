@@ -1,3 +1,3 @@
-struct NewUrl {
-    url: String,
+pub struct NewUrl {
+    pub url: String,
 }
