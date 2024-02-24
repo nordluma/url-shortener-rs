@@ -10,13 +10,16 @@ async fn main() -> anyhow::Result<()> {
     HttpServer::new(|| {
         App::new()
             .route("/", web::get().to(serve_home))
-            .route("/healthcheck", web::get().to(|| async { HttpResponse::Ok() }))
+            .route(
+                "/healthcheck",
+                web::get().to(|| async { HttpResponse::Ok() }),
+            )
             .route("/url", web::get().to(get_url))
             .route("/api/url", web::post().to(create_url))
     })
-        .bind((addr, port))?
-        .run()
-        .await?;
+    .bind((addr, port))?
+    .run()
+    .await?;
 
     Ok(())
 }
