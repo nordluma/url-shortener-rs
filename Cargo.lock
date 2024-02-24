@@ -974,12 +974,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "surreal"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "197aea290841fb089d6f97bb5c4f04d2bacc6672352292476223532aa202085d"
-
-[[package]]
 name = "syn"
 version = "1.0.109"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1155,7 +1149,6 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "anyhow",
- "surreal",
  "tokio",
 ]
 
