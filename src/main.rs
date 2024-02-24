@@ -1,6 +1,6 @@
 use actix_web::{http::header::ContentType, web, App, HttpResponse, HttpServer, Responder};
 
-use crate::routes:pages::home::get_home;
+use url_shortener::routes::pages::get_home;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
