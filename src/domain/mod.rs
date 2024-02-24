@@ -17,8 +17,8 @@ impl From<NewUrl> for Url {
 
         Self {
             url: value.url,
-            created_at: now,
-            last_modified: now.clone(),
+            created_at: now.clone(),
+            last_modified: now,
             request_count: 0,
         }
     }
