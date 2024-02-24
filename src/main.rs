@@ -8,6 +8,7 @@ async fn main() -> anyhow::Result<()> {
     HttpServer::new(|| {
         App::new()
             .route("/", web::get().to(homepage))
+            .route("/healthcheck", web::get().to(|| async { HttpResponse::Ok() }))
             .route("/url", web::get().to(get_url))
             .route("/api/url", web::post().to(create_url))
     })
