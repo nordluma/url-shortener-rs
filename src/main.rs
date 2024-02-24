@@ -5,7 +5,12 @@ async fn main() -> anyhow::Result<()> {
     let addr = "127.0.0.1";
     let port = 8080;
 
-    HttpServer::new(|| App::new().route("/", web::get().to(homepage)).route("/api/url", web::post().to(create_url)))
+    HttpServer::new(|| {
+        App::new()
+            .route("/", web::get().to(homepage))
+            .route("/url", web::get().to(get_url))
+            .route("/api/url", web::post().to(create_url))
+    })
         .bind((addr, port))?
         .run()
         .await?;
@@ -23,4 +28,10 @@ async fn homepage() -> impl Responder {
 // TODO: insert url into db and return shortened url
 async fn create_url() -> impl Responder {
     HttpResponse::Ok().body("Hello, world")
+}
+
+async fn get_url() -> impl Responder {
+    // TODO: get url from db
+    let url = "https://youtube.com";
+    HttpResponse::SeeOther()
 }
