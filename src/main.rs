@@ -1,5 +1,7 @@
 use actix_web::{http::header::ContentType, web, App, HttpResponse, HttpServer, Responder};
 
+use crate::routes:pages::home::get_home;
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let addr = "127.0.0.1";
@@ -7,7 +9,7 @@ async fn main() -> anyhow::Result<()> {
 
     HttpServer::new(|| {
         App::new()
-            .route("/", web::get().to(homepage))
+            .route("/", web::get().to(serve_home))
             .route("/healthcheck", web::get().to(|| async { HttpResponse::Ok() }))
             .route("/url", web::get().to(get_url))
             .route("/api/url", web::post().to(create_url))
@@ -20,10 +22,10 @@ async fn main() -> anyhow::Result<()> {
 }
 
 // TODO: serve homepage
-async fn homepage() -> impl Responder {
+async fn serve_home() -> impl Responder {
     HttpResponse::Ok()
         .content_type(ContentType::html())
-        .body(include_str!("../static/index.html"))
+        .body(get_home())
 }
 
 // TODO: insert url into db and return shortened url
