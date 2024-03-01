@@ -41,6 +41,16 @@ impl Database {
         Ok(url)
     }
 
+    pub async fn get_url(&self, short_id: String) -> surrealdb::Result<Option<String>> {
+        let mut result = self
+            .connection
+            .query("SELECT url FROM short_url WHERE short_id = ($short_id)")
+            .bind(("short_id", short_id))
+            .await?;
+
+        Ok(result.take(0)?)
+    }
+
     pub async fn get_urls(&self) -> surrealdb::Result<Vec<Url>> {
         println!("->> DATABASE - get_urls");
         self.connection.select("short_url").await
