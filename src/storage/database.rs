@@ -20,17 +20,29 @@ impl Database {
 
     pub async fn insert_url(&self, new_url: Url) -> surrealdb::Result<Option<Url>> {
         println!("->> DATABASE - insert_url, {:?}", new_url);
-        let created_url = self
+        let mut res = self
             .connection
-            .create(("short-url", "test"))
-            .content(new_url)
+            .query("SELECT * FROM short_url WHERE url = ($url)")
+            .bind(("url", &new_url.url))
             .await?;
 
-        Ok(created_url)
+        let existing_url: Option<Url> = res.take(0)?;
+        let url = if let Some(existing_url) = existing_url {
+            println!("->> DATABASE - URL already exists in database, returning existing url");
+
+            Some(existing_url)
+        } else {
+            self.connection
+                .create(("short_url", &new_url.short_id))
+                .content(new_url)
+                .await?
+        };
+
+        Ok(url)
     }
 
     pub async fn get_urls(&self) -> surrealdb::Result<Vec<Url>> {
         println!("->> DATABASE - get_urls");
-        self.connection.select("short-url").await
+        self.connection.select("short_url").await
     }
 }
