@@ -1,5 +1,11 @@
-use actix_web::{http::header::LOCATION, web, HttpResponse, Responder};
+use actix_web::{
+    http::header::LOCATION,
+    web::{self, Data},
+    HttpResponse, Responder,
+};
 use serde::Deserialize;
+
+use crate::{domain::Url, storage::database::Database};
 
 #[derive(Debug, Deserialize)]
 pub struct UrlRequest {
@@ -7,12 +13,23 @@ pub struct UrlRequest {
 }
 
 // TODO: insert url into db and return shortened url
-pub async fn create_url(url: web::Form<UrlRequest>) -> impl Responder {
-    println!("{}", url.url);
+pub async fn create_url(
+    url: web::Form<UrlRequest>,
+    conn: Data<Database>,
+) -> actix_web::Result<HttpResponse> {
+    let url: Url = url.into_inner().into();
+    println!("{:#?}", url);
 
-    HttpResponse::SeeOther()
+    if let Err(err) = conn.insert_url(url).await {
+        eprintln!("->> {}", err);
+        return Ok(HttpResponse::InternalServerError().finish());
+    }
+
+    Ok(HttpResponse::SeeOther()
         .insert_header((LOCATION, "/"))
-        .finish()
+        .finish())
+}
+
 }
 
 pub async fn get_url() -> impl Responder {

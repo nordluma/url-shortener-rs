@@ -27,4 +27,14 @@ impl Database {
 
         Ok(Self { connection })
     }
+
+    pub async fn insert_url(&self, new_url: Url) -> surrealdb::Result<Option<Url>> {
+        let created_url = self
+            .connection
+            .create(("short-url", "test"))
+            .content(new_url)
+            .await?;
+
+        Ok(created_url)
+    }
 }
