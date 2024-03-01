@@ -1,22 +1,27 @@
+use chrono::{DateTime, Utc};
+use nanoid::nanoid;
+use serde::{Deserialize, Serialize};
+
 use crate::routes::url::UrlRequest;
 
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Url {
     id: String,
     url: String,
-    created_at: String,
-    last_modified: String,
+    created_at: DateTime<Utc>,
+    last_accessed: Option<DateTime<Utc>>,
     request_count: usize,
 }
 
 impl From<UrlRequest> for Url {
     fn from(value: UrlRequest) -> Self {
-        let now = "NOW".to_string();
+        let now = chrono::Utc::now();
 
         Self {
-            id: "some".to_string(),
+            id: nanoid!(8),
             url: value.url,
-            created_at: now.clone(),
-            last_modified: now,
+            created_at: now,
+            last_accessed: None,
             request_count: 0,
         }
     }
