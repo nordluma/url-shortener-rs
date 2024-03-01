@@ -6,7 +6,7 @@ use actix_web::{
 use serde::Deserialize;
 
 use crate::{
-    domain::{validate_short_id, AppState, Url},
+    domain::{validate_short_id, AppState, ShortId, Url},
     storage::database::Database,
 };
 
@@ -51,12 +51,12 @@ pub async fn get_url(
     short_id: web::Path<ShortIdRequest>,
     state: Data<AppState>,
 ) -> actix_web::Result<HttpResponse> {
-    let Ok(()) = validate_short_id(&short_id.short_id) else {
+    let Ok(short_id) = ShortId::parse(short_id.short_id) else {
         return Ok(HttpResponse::BadRequest().finish());
     };
 
     // TODO: query url from db
-    println!("{}/{}", state.url, short_id.short_id);
+    println!("{}/{}", state.url, short_id);
 
     Ok(HttpResponse::SeeOther().finish())
 }

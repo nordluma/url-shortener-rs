@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::routes::url::UrlRequest;
 
+const SHORT_ID_LEN: usize = 8;
+
 pub enum ValidationError {
     InvalidShortId,
 }
@@ -11,6 +13,35 @@ pub enum ValidationError {
 #[derive(Clone)]
 pub struct AppState {
     pub url: String,
+}
+
+#[derive(Debug)]
+pub struct ShortId(String);
+
+impl std::ops::Deref for ShortId {
+    type Target = str;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl std::fmt::Display for ShortId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl ShortId {
+    pub fn parse(short_id: String) -> Result<Self, ValidationError> {
+        if !short_id.len() == SHORT_ID_LEN
+            && short_id.chars().find(|c| !c.is_alphanumeric()).is_some()
+        {
+            return Err(ValidationError::InvalidShortId);
+        }
+
+        Ok(Self(short_id))
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -27,19 +58,11 @@ impl From<UrlRequest> for Url {
         let now = chrono::Utc::now();
 
         Self {
-            short_id: nanoid!(8, &nanoid::alphabet::SAFE),
+            short_id: nanoid!(SHORT_ID_LEN, &nanoid::alphabet::SAFE),
             url: value.url,
             created_at: now,
             last_accessed: None,
             request_count: 0,
         }
     }
-}
-
-pub fn validate_short_id(short_id: &str) -> Result<(), ValidationError> {
-    if !short_id.len() == 8 && short_id.chars().find(|c| !c.is_alphanumeric()).is_some() {
-        return Err(ValidationError::InvalidShortId);
-    }
-
-    Ok(())
 }
