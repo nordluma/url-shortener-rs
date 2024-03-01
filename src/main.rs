@@ -1,15 +1,21 @@
 use actix_web::{http::header::ContentType, web, App, HttpResponse, HttpServer, Responder};
 
-use url_shortener::routes::{self, pages::get_home};
+use url_shortener::{
+    routes::{self, pages::get_home},
+    storage::database::Database,
+};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let addr = "127.0.0.1";
     let port = 8080;
 
+    let connection = web::Data::new(Database::connect().await?);
+
     println!("->> Listening on {}", port);
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
+            .app_data(connection.clone())
             .route("/", web::get().to(serve_home))
             .route(
                 "/healthcheck",
