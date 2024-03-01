@@ -7,7 +7,7 @@ use url_shortener::{
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let addr = "127.0.0.1";
+    let addr = "localhost";
     let port = 8080;
 
     let connection = web::Data::new(Database::connect().await?);
