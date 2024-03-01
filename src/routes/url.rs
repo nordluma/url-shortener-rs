@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub struct UrlRequest {
-    url: String,
+    pub url: String,
 }
 
 // TODO: insert url into db and return shortened url
