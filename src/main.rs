@@ -32,7 +32,6 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-// TODO: serve homepage
 async fn serve_home() -> impl Responder {
     HttpResponse::Ok()
         .content_type(ContentType::html())
