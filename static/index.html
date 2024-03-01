@@ -1,20 +1,20 @@
 <!doctype html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>URL Shortener</title>
     <link href="css/style.css" rel="stylesheet" />
-</head>
+  </head>
 
-<body>
+  <body>
     <h1>Url Shortener</h1>
-    <form action="post">
-        <label for="postUrl">Enter url to shorten:</h2>
-            <input type="url" name="postUrl" value="postUrl">
-            <input type="submit" name="" value="">
+    <form action="/api/url" method="POST">
+      <label for="url"
+        >Enter url to shorten:
+        <input type="url" name="url" />
+      </label>
+      <button type="submit">Shorten</button>
     </form>
-</body>
-
+  </body>
 </html>
