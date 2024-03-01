@@ -1,6 +1,7 @@
 use actix_web::{http::header::ContentType, web, App, HttpResponse, HttpServer, Responder};
 
 use url_shortener::{
+    domain::AppState,
     routes::{self, pages::get_home},
     storage::database::Database,
 };
@@ -10,20 +11,24 @@ async fn main() -> anyhow::Result<()> {
     let addr = "localhost";
     let port = 8080;
 
+    let state = web::Data::new(AppState {
+        url: addr.to_string(),
+    });
     let connection = web::Data::new(Database::connect().await?);
 
     println!("->> Listening on {}", port);
     HttpServer::new(move || {
         App::new()
-            .app_data(connection.clone())
             .route("/", web::get().to(serve_home))
             .route(
                 "/healthcheck",
                 web::get().to(|| async { HttpResponse::Ok() }),
             )
-            .route("/url", web::get().to(routes::url::get_url))
+            .route("/{short_id}", web::get().to(routes::url::get_url))
             .route("/api/url", web::get().to(routes::url::get_urls))
             .route("/api/url", web::post().to(routes::url::create_url))
+            .app_data(state.clone())
+            .app_data(connection.clone())
     })
     .bind((addr, port))?
     .run()

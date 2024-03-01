@@ -1,11 +1,14 @@
 use actix_web::{
     http::header::LOCATION,
     web::{self, Data},
-    HttpResponse, Responder,
+    HttpResponse,
 };
 use serde::Deserialize;
 
-use crate::{domain::Url, storage::database::Database};
+use crate::{
+    domain::{validate_short_id, AppState, Url},
+    storage::database::Database,
+};
 
 #[derive(Debug, Deserialize)]
 pub struct UrlRequest {
@@ -39,8 +42,21 @@ pub async fn get_urls(conn: Data<Database>) -> actix_web::Result<HttpResponse> {
     Ok(HttpResponse::Ok().json(urls))
 }
 
-pub async fn get_url() -> impl Responder {
-    // TODO: get url from db
-    let _url = "https://youtube.com";
-    HttpResponse::SeeOther()
+#[derive(Debug, Deserialize)]
+pub struct ShortIdRequest {
+    short_id: String,
+}
+
+pub async fn get_url(
+    short_id: web::Path<ShortIdRequest>,
+    state: Data<AppState>,
+) -> actix_web::Result<HttpResponse> {
+    let Ok(()) = validate_short_id(&short_id.short_id) else {
+        return Ok(HttpResponse::BadRequest().finish());
+    };
+
+    // TODO: query url from db
+    println!("{}/{}", state.url, short_id.short_id);
+
+    Ok(HttpResponse::SeeOther().finish())
 }
