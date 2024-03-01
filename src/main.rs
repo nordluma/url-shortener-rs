@@ -22,6 +22,7 @@ async fn main() -> anyhow::Result<()> {
                 web::get().to(|| async { HttpResponse::Ok() }),
             )
             .route("/url", web::get().to(routes::url::get_url))
+            .route("/api/url", web::get().to(routes::url::get_urls))
             .route("/api/url", web::post().to(routes::url::create_url))
     })
     .bind((addr, port))?

@@ -30,6 +30,16 @@ pub async fn create_url(
         .finish())
 }
 
+pub async fn get_urls(conn: Data<Database>) -> actix_web::Result<HttpResponse> {
+    let Ok(urls) = conn.get_urls().await else {
+        return Ok(HttpResponse::InternalServerError().finish());
+    };
+
+    for url in urls {
+        println!("{:#?}", url);
+    }
+
+    Ok(HttpResponse::Ok().finish())
 }
 
 pub async fn get_url() -> impl Responder {

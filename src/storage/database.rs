@@ -37,4 +37,8 @@ impl Database {
 
         Ok(created_url)
     }
+
+    pub async fn get_urls(&self) -> surrealdb::Result<Vec<Url>> {
+        self.connection.select("short-url").await
+    }
 }
