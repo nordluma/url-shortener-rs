@@ -6,11 +6,11 @@ use crate::routes::url::UrlRequest;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Url {
-    id: String,
-    url: String,
-    created_at: DateTime<Utc>,
-    last_accessed: Option<DateTime<Utc>>,
-    request_count: usize,
+    pub id: String,
+    pub url: String,
+    pub created_at: DateTime<Utc>,
+    pub last_accessed: Option<DateTime<Utc>>,
+    pub request_count: usize,
 }
 
 impl From<UrlRequest> for Url {
@@ -18,7 +18,7 @@ impl From<UrlRequest> for Url {
         let now = chrono::Utc::now();
 
         Self {
-            id: nanoid!(8),
+            id: nanoid!(8, &nanoid::alphabet::SAFE),
             url: value.url,
             created_at: now,
             last_accessed: None,
