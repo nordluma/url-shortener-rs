@@ -29,6 +29,7 @@ impl Database {
     }
 
     pub async fn insert_url(&self, new_url: Url) -> surrealdb::Result<Option<Url>> {
+        println!("->> DATABASE - insert_url, {:?}", new_url);
         let created_url = self
             .connection
             .create(("short-url", "test"))
@@ -39,6 +40,7 @@ impl Database {
     }
 
     pub async fn get_urls(&self) -> surrealdb::Result<Vec<Url>> {
+        println!("->> DATABASE - get_urls");
         self.connection.select("short-url").await
     }
 }

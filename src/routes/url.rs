@@ -17,11 +17,11 @@ pub async fn create_url(
     url: web::Form<UrlRequest>,
     conn: Data<Database>,
 ) -> actix_web::Result<HttpResponse> {
+    println!("->> HANDLER - create_url: {:?}", url);
     let url: Url = url.into_inner().into();
-    println!("{:#?}", url);
 
     if let Err(err) = conn.insert_url(url).await {
-        eprintln!("->> {}", err);
+        eprintln!("->> DB ERROR: {}", err);
         return Ok(HttpResponse::InternalServerError().finish());
     }
 
@@ -31,6 +31,7 @@ pub async fn create_url(
 }
 
 pub async fn get_urls(conn: Data<Database>) -> actix_web::Result<HttpResponse> {
+    println!("->> HANDLER - get_urls");
     let Ok(urls) = conn.get_urls().await else {
         return Ok(HttpResponse::InternalServerError().finish());
     };
