@@ -1,10 +1,15 @@
 use chrono::{DateTime, Utc};
 use nanoid::nanoid;
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 
 use crate::routes::url::UrlRequest;
 
 const SHORT_ID_LEN: usize = 8;
+
+lazy_static::lazy_static! {
+    static ref ACCEPTED_CHARS: Regex = Regex::new(r"[a-zA-Z0-9\-\_]{8}").unwrap();
+}
 
 pub enum ValidationError {
     InvalidShortId,
@@ -35,9 +40,7 @@ impl std::fmt::Display for ShortId {
 impl ShortId {
     pub fn parse(short_id: String) -> Result<Self, ValidationError> {
         println!("->> DOMAIN - parse: {}", short_id);
-        if short_id.len() != SHORT_ID_LEN
-            && short_id.chars().find(|c| !c.is_alphanumeric()).is_some()
-        {
+        if !ACCEPTED_CHARS.is_match(&short_id) {
             return Err(ValidationError::InvalidShortId);
         }
 
