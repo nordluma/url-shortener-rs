@@ -2,7 +2,7 @@ use actix_web::{http::header::ContentType, web, App, HttpResponse, HttpServer, R
 
 use url_shortener::{
     domain::AppState,
-    routes::{self, pages::get_home},
+    routes::{self, api_config, pages::get_home},
     storage::database::Database,
 };
 
@@ -34,14 +34,6 @@ async fn main() -> anyhow::Result<()> {
     .await?;
 
     Ok(())
-}
-
-fn api_config(cfg: &mut web::ServiceConfig) {
-    cfg.service(
-        web::resource("/url")
-            .route(web::get().to(routes::url::get_urls))
-            .route(web::post().to(routes::url::create_url)),
-    );
 }
 
 async fn serve_home() -> impl Responder {
