@@ -18,15 +18,25 @@ pub struct UrlRequest {
 // TODO: insert url into db and return shortened url
 pub async fn create_url(
     url: web::Form<UrlRequest>,
+    state: Data<AppState>,
     conn: Data<Database>,
 ) -> actix_web::Result<HttpResponse> {
     println!("->> HANDLER - create_url: {:?}", url);
     let url: Url = url.into_inner().into();
 
-    if let Err(err) = conn.insert_url(url).await {
-        eprintln!("->> DB ERROR: {}", err);
-        return Ok(HttpResponse::InternalServerError().finish());
-    }
+    let created_url = match conn.insert_url(url).await {
+        Ok(Some(url)) => url.short_id,
+        Ok(None) => return Ok(HttpResponse::InternalServerError().finish()),
+        Err(err) => {
+            eprintln!("->> DB ERROR: {}", err);
+            return Ok(HttpResponse::InternalServerError().finish());
+        }
+    };
+
+    println!(
+        "->> HANDLER - create_url: shortened url -> {}/{}",
+        state.url, created_url
+    );
 
     Ok(HttpResponse::SeeOther()
         .insert_header((LOCATION, "/"))
