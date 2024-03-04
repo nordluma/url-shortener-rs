@@ -15,7 +15,7 @@ pub struct AppState {
     pub url: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct ShortId(String);
 
 impl std::ops::Deref for ShortId {
