@@ -63,6 +63,7 @@ pub async fn get_url(
 ) -> actix_web::Result<HttpResponse> {
     println!("->> HANDLER - get_url: {:?}", short_id);
     let Ok(short_id) = ShortId::parse(short_id.short_id.clone()) else {
+        eprintln!("->> HANDLER - get_url: invalid url");
         return Ok(HttpResponse::BadRequest().finish());
     };
 
