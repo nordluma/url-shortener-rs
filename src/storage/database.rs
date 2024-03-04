@@ -3,7 +3,7 @@ use surrealdb::{
     Surreal,
 };
 
-use crate::domain::Url;
+use crate::domain::{ShortId, Url};
 
 #[derive(Clone)]
 pub struct Database {
@@ -41,14 +41,33 @@ impl Database {
         Ok(url)
     }
 
-    pub async fn get_url(&self, short_id: String) -> surrealdb::Result<Option<String>> {
+    pub async fn get_url(&self, short_id: ShortId) -> surrealdb::Result<Option<Url>> {
         let mut result = self
             .connection
-            .query("SELECT url FROM short_url WHERE short_id = ($short_id)")
+            .query("SELECT * FROM short_url WHERE short_id = ($short_id)")
             .bind(("short_id", short_id))
             .await?;
 
-        Ok(result.take(0)?)
+        let existing_url: Option<Url> = result.take(0)?;
+        let url = if let Some(existing_url) = existing_url {
+            let url: Option<Url> = self
+                .connection
+                .update(("short_url", &existing_url.short_id))
+                .content(Url {
+                    short_id: existing_url.short_id,
+                    url: existing_url.url,
+                    created_at: existing_url.created_at,
+                    last_accessed: Some(chrono::Utc::now()),
+                    request_count: existing_url.request_count + 1,
+                })
+                .await?;
+
+            url
+        } else {
+            None
+        };
+
+        Ok(url)
     }
 
     pub async fn get_urls(&self) -> surrealdb::Result<Vec<Url>> {
