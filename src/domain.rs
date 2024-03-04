@@ -35,7 +35,7 @@ impl std::fmt::Display for ShortId {
 impl ShortId {
     pub fn parse(short_id: String) -> Result<Self, ValidationError> {
         println!("->> DOMAIN - parse: {}", short_id);
-        if !short_id.len() == SHORT_ID_LEN
+        if short_id.len() != SHORT_ID_LEN
             && short_id.chars().find(|c| !c.is_alphanumeric()).is_some()
         {
             return Err(ValidationError::InvalidShortId);
