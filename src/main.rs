@@ -25,8 +25,7 @@ async fn main() -> anyhow::Result<()> {
                 web::get().to(|| async { HttpResponse::Ok() }),
             )
             .route("/{short_id}", web::get().to(routes::url::get_url))
-            .route("/api/url", web::get().to(routes::url::get_urls))
-            .route("/api/url", web::post().to(routes::url::create_url))
+            .service(web::scope("/api").configure(api_config))
             .app_data(state.clone())
             .app_data(connection.clone())
     })
@@ -35,6 +34,14 @@ async fn main() -> anyhow::Result<()> {
     .await?;
 
     Ok(())
+}
+
+fn api_config(cfg: &mut web::ServiceConfig) {
+    cfg.service(
+        web::resource("/url")
+            .route(web::get().to(routes::url::get_urls))
+            .route(web::post().to(routes::url::create_url)),
+    );
 }
 
 async fn serve_home() -> impl Responder {
