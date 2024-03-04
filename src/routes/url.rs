@@ -51,6 +51,7 @@ pub async fn get_url(
     short_id: web::Path<ShortIdRequest>,
     conn: Data<Database>,
 ) -> actix_web::Result<HttpResponse> {
+    println!("->> HANDLER - get_url: {:?}", short_id);
     let Ok(short_id) = ShortId::parse(short_id.short_id.clone()) else {
         return Ok(HttpResponse::BadRequest().finish());
     };
@@ -58,6 +59,11 @@ pub async fn get_url(
     let Ok(Some(url)) = conn.get_url(short_id).await else {
         return Ok(HttpResponse::NotFound().finish());
     };
+
+    println!(
+        "->> HANDLER - get_url: found url, redirecting to -> {}",
+        url.url
+    );
 
     Ok(HttpResponse::Found()
         .insert_header((LOCATION, url.url))

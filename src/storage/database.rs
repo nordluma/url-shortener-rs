@@ -42,6 +42,7 @@ impl Database {
     }
 
     pub async fn get_url(&self, short_id: ShortId) -> surrealdb::Result<Option<Url>> {
+        println!("->> DATABASE - get_url: {}", short_id);
         let mut result = self
             .connection
             .query("SELECT * FROM short_url WHERE short_id = ($short_id)")
@@ -49,6 +50,10 @@ impl Database {
             .await?;
 
         let existing_url: Option<Url> = result.take(0)?;
+        println!(
+            "->> DATABASE - get_url: url from database: {:?}",
+            existing_url
+        );
         let url = if let Some(existing_url) = existing_url {
             let url: Option<Url> = self
                 .connection
