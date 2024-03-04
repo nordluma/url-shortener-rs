@@ -49,14 +49,17 @@ pub struct ShortIdRequest {
 
 pub async fn get_url(
     short_id: web::Path<ShortIdRequest>,
-    state: Data<AppState>,
+    conn: Data<Database>,
 ) -> actix_web::Result<HttpResponse> {
     let Ok(short_id) = ShortId::parse(short_id.short_id.clone()) else {
         return Ok(HttpResponse::BadRequest().finish());
     };
 
-    // TODO: query url from db
-    println!("{}/{}", state.url, short_id);
+    let Ok(Some(url)) = conn.get_url(short_id).await else {
+        return Ok(HttpResponse::NotFound().finish());
+    };
 
-    Ok(HttpResponse::SeeOther().finish())
+    Ok(HttpResponse::Found()
+        .insert_header((LOCATION, url.url))
+        .finish())
 }
