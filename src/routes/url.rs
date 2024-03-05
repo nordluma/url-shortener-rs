@@ -1,8 +1,4 @@
-use actix_web::{
-    http::header::LOCATION,
-    web::{self, Data},
-    HttpResponse,
-};
+use actix_web::{http::header::LOCATION, web, HttpResponse};
 use serde::Deserialize;
 
 use crate::{
@@ -18,8 +14,8 @@ pub struct UrlRequest {
 // TODO: insert url into db and return shortened url
 pub async fn create_url(
     url: web::Form<UrlRequest>,
-    state: Data<AppState>,
-    conn: Data<Database>,
+    state: web::Data<AppState>,
+    conn: web::Data<Database>,
 ) -> actix_web::Result<HttpResponse> {
     println!("->> HANDLER - create_url: {:?}", url);
     let url: Url = url.into_inner().into();
@@ -43,7 +39,7 @@ pub async fn create_url(
         .finish())
 }
 
-pub async fn get_urls(conn: Data<Database>) -> actix_web::Result<HttpResponse> {
+pub async fn get_urls(conn: web::Data<Database>) -> actix_web::Result<HttpResponse> {
     println!("->> HANDLER - get_urls");
     let Ok(urls) = conn.get_urls().await else {
         return Ok(HttpResponse::InternalServerError().finish());
@@ -59,7 +55,7 @@ pub struct ShortIdRequest {
 
 pub async fn get_url(
     short_id: web::Path<ShortIdRequest>,
-    conn: Data<Database>,
+    conn: web::Data<Database>,
 ) -> actix_web::Result<HttpResponse> {
     println!("->> HANDLER - get_url: {:?}", short_id);
     let Ok(short_id) = ShortId::parse(short_id.short_id.clone()) else {
