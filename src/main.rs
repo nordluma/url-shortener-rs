@@ -3,7 +3,7 @@ use actix_web::{http::header::ContentType, web, App, HttpResponse, HttpServer, R
 use url_shortener::{
     domain::AppState,
     routes::{self, api_config, pages::get_home},
-    storage::database::Database,
+    storage::{cache::CacheStorage, database::Database},
 };
 
 #[tokio::main]
@@ -15,6 +15,7 @@ async fn main() -> anyhow::Result<()> {
         url: addr.to_string(),
     });
     let connection = web::Data::new(Database::connect().await?);
+    let cache = web::Data::new(CacheStorage::build(1000));
 
     println!("->> Listening on {}", port);
     HttpServer::new(move || {
@@ -28,6 +29,7 @@ async fn main() -> anyhow::Result<()> {
             .service(web::scope("/api").configure(api_config))
             .app_data(state.clone())
             .app_data(connection.clone())
+            .app_data(cache.clone())
     })
     .bind((addr, port))?
     .run()
