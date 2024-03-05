@@ -33,7 +33,7 @@ impl Database {
             Some(existing_url)
         } else {
             self.connection
-                .create(("short_url", &new_url.short_id))
+                .create(("short_url", &*new_url.short_id))
                 .content(new_url)
                 .await?
         };
@@ -57,7 +57,7 @@ impl Database {
         let url = if let Some(existing_url) = existing_url {
             let url: Option<Url> = self
                 .connection
-                .update(("short_url", &existing_url.short_id))
+                .update(("short_url", &*existing_url.short_id))
                 .content(Url {
                     short_id: existing_url.short_id,
                     url: existing_url.url,

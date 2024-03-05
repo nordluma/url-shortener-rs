@@ -39,6 +39,10 @@ impl std::fmt::Display for ShortId {
 }
 
 impl ShortId {
+    pub fn new() -> Self {
+        Self(nanoid!(SHORT_ID_LEN, &nanoid::alphabet::SAFE))
+    }
+
     pub fn parse(short_id: String) -> Result<Self, ValidationError> {
         println!("->> DOMAIN - parse: {}", short_id);
         if !ACCEPTED_CHARS.is_match(&short_id) {
@@ -51,7 +55,7 @@ impl ShortId {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Url {
-    pub short_id: String,
+    pub short_id: ShortId,
     pub url: String,
     pub created_at: DateTime<Utc>,
     pub last_accessed: Option<DateTime<Utc>>,
@@ -63,7 +67,7 @@ impl From<UrlRequest> for Url {
         let now = chrono::Utc::now();
 
         Self {
-            short_id: nanoid!(SHORT_ID_LEN, &nanoid::alphabet::SAFE),
+            short_id: ShortId::new(),
             url: value.url,
             created_at: now,
             last_accessed: None,

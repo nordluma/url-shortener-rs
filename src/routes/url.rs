@@ -79,10 +79,7 @@ pub async fn get_url(
         return Ok(HttpResponse::NotFound().finish());
     };
 
-    cache
-        .cache
-        .insert(ShortId::parse(url.short_id).unwrap(), url.url.clone())
-        .await;
+    cache.cache.insert(url.short_id, url.url.clone()).await;
 
     println!(
         "->> HANDLER - get_url: found url, redirecting to -> {}",
