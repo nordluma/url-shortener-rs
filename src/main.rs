@@ -25,8 +25,8 @@ async fn main() -> anyhow::Result<()> {
                 "/healthcheck",
                 web::get().to(|| async { HttpResponse::Ok() }),
             )
-            .route("/{short_id}", web::get().to(routes::url::get_url))
             .service(web::scope("/api").configure(api_config))
+            .route("/{short_id}", web::get().to(routes::url::get_url))
             .app_data(state.clone())
             .app_data(connection.clone())
             .app_data(cache.clone())

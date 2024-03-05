@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 use crate::{
     domain::{AppState, ShortId, Url},
-    storage::database::Database,
+    storage::{cache::CacheStorage, database::Database},
 };
 
 #[derive(Debug, Deserialize)]
@@ -55,6 +55,7 @@ pub struct ShortIdRequest {
 
 pub async fn get_url(
     short_id: web::Path<ShortIdRequest>,
+    cache: web::Data<CacheStorage>,
     conn: web::Data<Database>,
 ) -> actix_web::Result<HttpResponse> {
     println!("->> HANDLER - get_url: {:?}", short_id);
@@ -63,9 +64,25 @@ pub async fn get_url(
         return Ok(HttpResponse::BadRequest().finish());
     };
 
+    // check cache
+    if let Some(url) = cache.cache.get(&short_id).await {
+        println!("->> Cache hit");
+        // TODO: how to increment request_count for the matching url and update
+        // access time?
+        return Ok(HttpResponse::Found()
+            .insert_header((LOCATION, url))
+            .finish());
+    }
+
+    println!("->> Cache miss");
     let Ok(Some(url)) = conn.get_url(short_id).await else {
         return Ok(HttpResponse::NotFound().finish());
     };
+
+    cache
+        .cache
+        .insert(ShortId::parse(url.short_id).unwrap(), url.url.clone())
+        .await;
 
     println!(
         "->> HANDLER - get_url: found url, redirecting to -> {}",
