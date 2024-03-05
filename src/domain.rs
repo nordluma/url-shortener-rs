@@ -11,6 +11,7 @@ lazy_static::lazy_static! {
     static ref ACCEPTED_CHARS: Regex = Regex::new(r"[a-zA-Z0-9\-\_]{8}").unwrap();
 }
 
+#[derive(Debug)]
 pub enum ValidationError {
     InvalidShortId,
 }
@@ -20,7 +21,7 @@ pub struct AppState {
     pub url: String,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, PartialEq, Eq, Hash, Deserialize, Serialize)]
 pub struct ShortId(String);
 
 impl std::ops::Deref for ShortId {
