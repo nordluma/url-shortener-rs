@@ -1,7 +1,9 @@
 use moka::future::Cache;
 
+use crate::domain::ShortId;
+
 pub struct CacheStorage {
-    pub cache: Cache<String, String>,
+    pub cache: Cache<ShortId, String>,
 }
 
 impl CacheStorage {
