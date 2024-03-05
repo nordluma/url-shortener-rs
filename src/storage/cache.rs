@@ -1,7 +1,7 @@
 use moka::future::Cache;
 
 pub struct CacheStorage {
-    cache: Cache<String, String>,
+    pub cache: Cache<String, String>,
 }
 
 impl CacheStorage {
