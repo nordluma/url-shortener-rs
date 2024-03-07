@@ -3,15 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
     <title>URL Shortener</title>
   </head>
 
   <body>
     <h1>Url Shortener</h1>
     <form action="/api/url" method="POST">
-      <label for="url"
+      <label for="submit-url"
         >Enter url to shorten:
-        <input type="url" name="url" />
+        <input type="url" id="submit-url" name="url" />
       </label>
       <button type="submit">Shorten</button>
     </form>
